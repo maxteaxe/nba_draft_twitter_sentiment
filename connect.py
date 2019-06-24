@@ -3,7 +3,7 @@
 contains functions necessary to connect to API's
 
 This file contains functions
-    * twitter_api() - connect to the twitter API
+    * twitter_api() - connect to the twitter API and return an API object
 
 Created by Ben Capodanno June 21, 2019. Updated June 21, 2019.
 """
@@ -19,6 +19,7 @@ def twitter_api():
     """
 
     auth = tweepy.OAuthHandler( os.environ['TWITTER_API'], os.environ['TWITTER_API_SECRET'] )
+    print( "Authorized..." )
     auth.set_access_token( os.environ['TWITTER_ACCESS'], os.environ['TWITTER_ACCESS_SECRET'] )
 
-    return tweepy.API( auth )
+    return tweepy.API( auth, wait_on_rate_limit = True )
