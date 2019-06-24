@@ -7,7 +7,6 @@ This file contains functions:
                                                                   converts to JSON format
     * access_saved_tweets( filepath ) - converts JSON formatted tweets to Pandas df
     * extract_tweet( filepath, id ) - extracts a specific tweet, based on its ID, from a JSON tweet file
-    * specific_hash( filepath, hashtag ) - extracts tweets with specific hashtags
     * main() - This files main function, ensures functionality of above
 
 
@@ -71,7 +70,6 @@ def access_saved_tweets( filepath ):
     text = []
     verified = []
     follower = []
-    user = []
     description = []
 
     for t in tweets:
@@ -88,9 +86,6 @@ def access_saved_tweets( filepath ):
         # Followers number
         follower.append( t['user']['followers_count'] )
         
-        # Add user
-        user.append( t['user']['name'] )
-
         # Add user bio
         description.append( t['user']['description'] )
         
@@ -98,7 +93,6 @@ def access_saved_tweets( filepath ):
          'text': text,
          'verified': verified,
          'followers': follower,
-         'user': user,
          'description' : description
         }
     
