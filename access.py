@@ -7,6 +7,7 @@ This file contains functions:
                                                                   converts to JSON format
     * access_saved_tweets( filepath ) - converts JSON formatted tweets to Pandas df
     * extract_tweet( filepath, id ) - extracts a specific tweet, based on its ID, from a JSON tweet file
+    * specific_hash( filepath, hashtag ) - extracts tweets with specific hashtags
     * main() - This files main function, ensures functionality of above
 
 
@@ -68,21 +69,10 @@ def access_saved_tweets( filepath ):
     
     id_str = []
     text = []
-    weekday = []
-    month = []
-    day = []
-    hour = []
-    coordinates = []
-    hashtag = []
-    url = []
-    favorite = []
-    reply = []
-    retweet = []
+    verified = []
     follower = []
-    following = []
     user = []
-    screen_name = []
-    user_id = []
+    description = []
 
     for t in tweets:
         t = jp.decode( t )
@@ -93,76 +83,23 @@ def access_saved_tweets( filepath ):
         # Text
         text.append( t['text'] )
         
-        # Decompose date
-        date = t['created_at']
-        weekday.append(date.split(' ')[0])
-        month.append(date.split(' ')[1])
-        day.append(date.split(' ')[2])
-        
-        time = date.split(' ')[3].split(':')
-        hour.append( time[0] ) 
-        
-        # Long/Lat Location
-        if t['coordinates'] == None:
-            coordinates.append( "null" )
-        else:
-            coordinates.append( t['coordinates']['coordinates'] )
+        verified.append( t['user']['verified'] )
 
-        # Has hashtag
-        if len( t['entities']['hashtags'] ) == 0:
-            hashtag.append( 0 )
-        else:
-            hashtag.append( 1 )
-            
-        # Has url
-        if len( t['entities']['urls'] ) == 0:
-            url.append( 0 )
-        else:
-            url.append( 1 )
-            
-        # Number of favs
-        favorite.append( t['favorite_count'] )
-        
-        # Is reply?
-        if t['in_reply_to_status_id'] == None:
-            reply.append( 0 )
-        else:
-            reply.append( 1 )
-        
-        # Retweets count
-        retweet.append( t['retweet_count'] )
-        
         # Followers number
         follower.append( t['user']['followers_count'] )
-        
-        # Following number
-        following.append( t['user']['friends_count'] )
         
         # Add user
         user.append( t['user']['name'] )
 
-        # Add screen name
-        screen_name.append( t['user']['screen_name'] )
-
-        # Add Useer ID
-        user_id.append( t['user']['id'] )
+        # Add user bio
+        description.append( t['user']['description'] )
         
     d = {'id_str': id_str,
          'text': text,
-         'weekday': weekday,
-         'month' : month,
-         'day': day,
-         'hour' : hour,
-         'coordinates': coordinates,
-         'has_hashtag': hashtag,
-         'has_url': url,
-         'fav_count': favorite,
-         'is_reply': reply,
-         'retweet_count': retweet,
+         'verified': verified,
          'followers': follower,
-         'following' : following,
          'user': user,
-         'screen_name' : screen_name
+         'description' : description
         }
     
     return pd.DataFrame( data = d )
@@ -188,29 +125,6 @@ def extract_tweet( filepath, id ):
 
     return
 
-def specific_hash( filepath, hashtag ):
-    """ extracts tweets of a specific hashtag from a tweet JSON file
-
-    :param filepath: The location of the JSON file
-    :type filepath: String
-    :param hash: The hashtag being searched for
-    :type hash: String
-    :returns: A list of tweets that contain the hashtag
-    :rtype: List of Dictionaries
-    """
-
-    tweets = list( open( filepath, 'rt' ) )
-    containing_hashtag = []
-
-    for t in tweets:
-        t = jp.decode( t )
-        for h in t['entities']['hashtags']:
-            if h['text'] == hashtag:
-                containing_hashtag.append( t )
-                break
-
-    return containing_hashtag
-
 def main():
     """ access and save tweets for a given query
 
@@ -227,8 +141,6 @@ def main():
     print( df.head() )
     et = extract_tweet( filepath, df.iloc[4]["id_str"] )
     print( et["id_str"] )
-    ht = specific_hash( "test.json", "testing123" )
-    print( ht[0]['entities']['hashtags'] )
 
 if __name__ == "__main__":
     if len( sys.argv ) > 1:
