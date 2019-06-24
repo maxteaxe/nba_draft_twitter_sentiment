@@ -126,7 +126,7 @@ def main():
     :rtype: None
     """
 
-    filepath = "test.json"
+    filepath = "test2.json"
     query = "#testing123"
 
     api = cn.twitter_api()
